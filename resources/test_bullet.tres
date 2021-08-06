@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://scripts/bullet_resource.gd" type="Script" id=1]
+[ext_resource path="res://scenes/bullet.tscn" type="PackedScene" id=2]
+
+[resource]
+script = ExtResource( 1 )
+bullet = ExtResource( 2 )
+max_speed = 1.0
+acceleration = 0.75
+knockback_power = 30
+lifetime = 0
+damage = 1
+bullet_scale_modifier = 0.0
+bullet_speed_modifier = 0.0

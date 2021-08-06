@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://scripts/radial_bullet_spawner.gd" type="Script" id=1]
+[ext_resource path="res://resources/test_bullet.tres" type="Resource" id=2]
+[ext_resource path="res://scripts/for_testing/target.gd" type="Script" id=3]
+[ext_resource path="res://icon.png" type="Texture" id=4]
+[ext_resource path="res://scripts/for_testing/main.gd" type="Script" id=5]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 32.0
+
+[sub_resource type="Animation" id=2]
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:point_curve")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 491.27 ]
+}
+
+[node name="main" type="Node2D"]
+position = Vector2( 512, 300 )
+script = ExtResource( 5 )
+
+[node name="bullet_spawner" type="Area2D" parent="."]
+collision_mask = 1024
+script = ExtResource( 1 )
+bullet_res = ExtResource( 2 )
+point_count = 16
+spawn_mode = 1
+line_mode = 1
+line_point_count = 3
+line_length = 256
+
+[node name="target" type="Sprite" parent="."]
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 4 )
+script = ExtResource( 3 )
+
+[node name="Area2D" type="Area2D" parent="target"]
+collision_layer = 1024
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="target/Area2D"]
+shape = SubResource( 1 )
+
+[node name="Tween" type="Tween" parent="target"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/star = SubResource( 2 )
+
+[connection signal="area_shape_entered" from="target/Area2D" to="target" method="_on_area_shape_entered"]
