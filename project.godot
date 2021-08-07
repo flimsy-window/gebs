@@ -14,12 +14,17 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://scripts/for_testing/bullet.gd"
 }, {
+"base": "Area2D",
+"class": "BulletContainer",
+"language": "GDScript",
+"path": "res://scripts/bullet_container.gd"
+}, {
 "base": "Resource",
 "class": "BulletResource",
 "language": "GDScript",
 "path": "res://scripts/bullet_resource.gd"
 }, {
-"base": "Area2D",
+"base": "Node2D",
 "class": "BulletSpawner",
 "language": "GDScript",
 "path": "res://scripts/bullet_spawner_class.gd"
@@ -31,6 +36,7 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Bullet": "",
+"BulletContainer": "",
 "BulletResource": "",
 "BulletSpawner": "",
 "RadialBulletSpawner": ""

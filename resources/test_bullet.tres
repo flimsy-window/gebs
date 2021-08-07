@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource( 1 )
 bullet = ExtResource( 2 )
-max_speed = 1.0
+max_speed = 3.0
 acceleration = 0.75
 knockback_power = 30
 lifetime = 0
