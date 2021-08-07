@@ -1,17 +1,21 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://scripts/radial_bullet_spawner.gd" type="Script" id=1]
 [ext_resource path="res://resources/test_bullet.tres" type="Resource" id=2]
 [ext_resource path="res://scripts/for_testing/target.gd" type="Script" id=3]
 [ext_resource path="res://icon.png" type="Texture" id=4]
 [ext_resource path="res://scripts/for_testing/main.gd" type="Script" id=5]
+[ext_resource path="res://scripts/bullet_container.gd" type="Script" id=6]
+[ext_resource path="res://scripts/for_testing/test_timer.gd" type="Script" id=7]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 32.0
 
-[sub_resource type="Animation" id=2]
+[sub_resource type="Animation" id=3]
+resource_name = "demo"
+length = 30.0
 tracks/0/type = "value"
-tracks/0/path = NodePath(".:point_curve")
+tracks/0/path = NodePath("bullet_spawner:spawn_mode")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -19,38 +23,172 @@ tracks/0/enabled = true
 tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("bullet_spawner:arc_width_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 2, 5, 6.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ 491.27 ]
+"values": [ 110.0, 360.0, 360.0, 180.0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("bullet_spawner:bullet_angle")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 3.5, 4, 4.5, 5.5, 6.5, 7 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1e+06, 1, 1 ),
+"update": 0,
+"values": [ 0.0, 0.0, -179.9, -179.9, 179.9, 0.0, 0.0 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("bullet_spawner:arc_rotation_degrees")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0, 2.5, 3.5, 5, 5.6, 6.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ 0.0, 0.0, 45.0, 0.0, 0.0, 360.0 ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("bullet_spawner:point_count")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 8 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("bullet_spawner:rotation_speed")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0, 5.6 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0.0, 4.0 ]
+}
+
+[sub_resource type="Animation" id=2]
+tracks/0/type = "value"
+tracks/0/path = NodePath("bullet_spawner:point_count")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 5 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("bullet_spawner:arc_width_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 360.0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("bullet_spawner:arc_rotation_degrees")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ -252.0 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("bullet_spawner:spawn_mode")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
 }
 
 [node name="main" type="Node2D"]
-position = Vector2( 512, 300 )
 script = ExtResource( 5 )
 
-[node name="bullet_spawner" type="Area2D" parent="."]
+[node name="bullet_container" type="Area2D" parent="."]
 collision_mask = 1024
+script = ExtResource( 6 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="bullet_spawner" type="Node2D" parent="."]
+position = Vector2( 512, 300 )
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+VISUAL = false
+bullet_container = NodePath("../bullet_container")
 bullet_res = ExtResource( 2 )
-point_count = 16
-spawn_mode = 1
-line_mode = 1
-line_point_count = 3
-line_length = 256
+pool_size = 800
+point_count = 5
+spawn_mode = 2
+line_point_count = 10
+line_length = 400
+arc_width_degrees = 360.0
 
 [node name="target" type="Sprite" parent="."]
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 4 )
 script = ExtResource( 3 )
+__meta__ = {
+"_edit_group_": true,
+"_edit_lock_": true
+}
 
 [node name="Area2D" type="Area2D" parent="target"]
 collision_layer = 1024
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="target/Area2D"]
 shape = SubResource( 1 )
+disabled = true
 
 [node name="Tween" type="Tween" parent="target"]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/demo = SubResource( 3 )
 anims/star = SubResource( 2 )
 
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.2
+script = ExtResource( 7 )
+
 [connection signal="area_shape_entered" from="target/Area2D" to="target" method="_on_area_shape_entered"]
+[connection signal="timeout" from="Timer" to="bullet_spawner" method="spawn_bullet"]
+[connection signal="timeout" from="Timer" to="Timer" method="_timeout"]

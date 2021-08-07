@@ -1,6 +1,7 @@
 extends CollisionShape2D
 class_name Bullet
 
+signal reallocate
 signal _continue
 
 export var align_sprite: bool
@@ -19,6 +20,7 @@ var dir : Vector2
 var velocity: Vector2
 
 var active: bool setget set_active
+var pool_id: int
 var is_local: bool
 
 var elapsed_time: float
@@ -98,5 +100,5 @@ func apply_speed_modifier(speed_mod: float):
 		max_speed = _speed
 
 func _on_VisibilityNotifier2D_screen_exited():
-	reallocate()
+	emit_signal("reallocate")
 

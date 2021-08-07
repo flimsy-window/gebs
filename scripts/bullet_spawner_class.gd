@@ -1,4 +1,4 @@
-extends Area2D
+extends Node2D
 class_name BulletSpawner
 """
 Base class for BulletSpawners; bullet pooling and helper functions
@@ -7,6 +7,7 @@ Base class for BulletSpawners; bullet pooling and helper functions
 # ---------------------------------------------------------------------------- #
 export var VISUAL: bool = true
 
+export var bullet_container: NodePath
 export var bullet_res: Resource
 export var local_bullets: bool setget set_local_bullets
 export var pool_size: = 100
@@ -21,17 +22,15 @@ onready var viewport: Viewport
 
 # ---------------------------------------------------------------------------- #
 var active: = false setget set_active
-var all_bullets: = []
-var pool: = []
+var pool: Reference
 var local_pool: = []
 var spawn_points: = []
 var update_spawn_points: = true
 var update_speed_modifier: = false
 var update_scale_modifier: = false
 
+
 var target setget set_target
-var shots_fired: int
-var can_shoot: = true
 
 
 # ---------------------------------------------------------------------------- #
@@ -52,60 +51,11 @@ func _input(event):
 # ---------------------------------------------------------------------------- #
 func _ready():
 	_setup()
-	_initialize_pool()
+	pool = get_node(bullet_container).initialize_pool(bullet_res, pool_size)
 	update()
 
 func _setup():
 	self.active = active
-
-
-# ---------------------------------------------------------------------------- #
-func _initialize_pool():
-	if !bullet_res:
-		return
-	print("initialize pool: ", float(OS.get_ticks_msec()) / 1000.0)
-	
-	var _complete: bool
-	var n: = 0
-	
-	while !_complete:
-		for i in pool_size:
-			var bullet: Bullet = bullet_res.bullet.instance()
-			_initialize_bullet(bullet)
-			all_bullets.append(bullet)
-			pool.append(bullet)
-			
-			# stagger loading
-			n += 1
-			if n == 10:
-				n = 0
-				yield(get_tree(), "idle_frame")
-			add_child(bullet)
-		_complete = true
-	print("bullets added to scene %s: %s" % [self, float(OS.get_ticks_msec()) / 1000.0])
-
-func _initialize_bullet(bullet: Bullet):
-	bullet.max_speed = bullet_res.max_speed
-	bullet.acceleration = bullet_res.acceleration
-	bullet.knockback_power = bullet_res.knockback_power
-	bullet.lifetime = bullet_res.lifetime
-	
-	bullet.position = Vector2.ZERO
-#	bullet.connect("reallocate", self, "_reallocate_bullet")
-	bullet.visible = false
-	
-	if bullet_scale_modifier:
-		var scale_mod: = rand_modifier(bullet_scale_modifier)
-		bullet.apply_scale_modifier(scale_mod)
-	if bullet_speed_modifier:
-		var speed_mod: = rand_modifier(bullet_speed_modifier)
-		bullet.apply_speed_modifier(speed_mod)
-
-func reallocate_bullet(shape_id):
-	var bullet: Bullet = all_bullets[shape_id]
-	bullet.reallocate()
-	if !bullet.is_local:
-		pool.push_back(bullet)
 
 
 # ---------------------------------------------------------------------------- #
@@ -127,7 +77,7 @@ func handle_local_bullets():
 				bullet.reallocate()
 			else:
 				var pos: Vector2 = spawn_points[idx]
-				bullet.position = pos
+				bullet.position = pos + global_position
 			idx += 1
 
 func release_local_bullets(speed: = bullet_res.max_speed):
@@ -182,14 +132,14 @@ func set_rotation_speed(value: float):
 func set_bullet_scale_modifier(value: float):
 	if bullet_scale_modifier != value:
 		bullet_scale_modifier = value
-		for bullet in all_bullets:
+		for bullet in pool.all_bullets:
 			var scale_mod: = rand_modifier(bullet_scale_modifier) if bullet_scale_modifier else 0.0
 			bullet.apply_scale_modifier(scale_mod)
 
 func set_bullet_speed_modifier(value: float):
 	if bullet_speed_modifier != value:
 		bullet_speed_modifier = value
-		for bullet in all_bullets:
+		for bullet in pool.all_bullets:
 			var speed_mod: = rand_modifier(bullet_speed_modifier) if bullet_speed_modifier else 0.0
 			bullet.apply_speed_modifier(speed_mod)
 
