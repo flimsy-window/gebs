@@ -3,6 +3,7 @@ class_name RadialBulletSpawner
 
 enum CircleState {CIRCUMFERENCE, ARC}
 enum SpawnMode {RADIAL, LINE, MULTI_LINE}
+enum ReleaseMode {RADIAL, LINE}
 enum AimMode {NONE, TARGET}
 enum LineMode {CENTERED, END}
 enum RandBulletAngleMode {OFF=1, ZERO_TO_SIGN=0, FULL_RANGE=-1}
@@ -13,6 +14,7 @@ enum RandBulletAngleMode {OFF=1, ZERO_TO_SIGN=0, FULL_RANGE=-1}
 
 # ---------------------------------------------------------------------------- #
 export (SpawnMode) var spawn_mode setget set_spawn_mode
+export (ReleaseMode) var local_release_mode
 export (AimMode) var aim_mode setget set_aim_mode
 export (LineMode) var line_mode setget set_line_mode
 export var rand_spawn_points: bool
@@ -121,14 +123,14 @@ func spawn_bullet():
 	var p: = []; var dupes: = []
 	var n: = 0; var idx: = 0			# MultiLine midpoint idx and counter
 	for pos in spawn_points:
-		if pool.empty():	break
+		if pool.pool.empty():	break
 		if remove_dupes:
 			var skip: = p.has(pos)
 			p.append(pos)
 			if skip:
 				dupes.append(p)
 				continue
-		var bullet: Bullet = pool.pop_front()
+		var bullet: Bullet = pool.pool.pop_front()
 		
 		var dir: Vector2
 		if global_dir:
@@ -144,6 +146,7 @@ func spawn_bullet():
 						n = 0
 						idx += 1
 		pos -= spawn_offset
+		pos += global_position
 		if local_bullets:
 			bullet.is_local = true
 			bullet.max_speed = 0
@@ -163,15 +166,17 @@ func release_local_bullets(speed: = bullet_res.max_speed):
 		if global_dir:
 			dir = global_dir
 		else:
-			match spawn_mode:
-				SpawnMode.RADIAL:
-					dir = calculate_bullet_direction(bullet.position)
-				SpawnMode.LINE, SpawnMode.MULTI_LINE:
+			match local_release_mode:
+				ReleaseMode.RADIAL:
+					dir = calculate_bullet_direction(to_local(bullet.position))
+				ReleaseMode.LINE:
 					if !n:
-						var next_bullet: Bullet = local_pool[idx * line_point_count + 1]
+						var next_bullet: Bullet = local_pool[idx * line_point_count + line_point_count - 1]
 						if next_bullet:
-							var local_dir: Vector2 = (bullet.position - next_bullet.position).normalized()
-							line_dir = calculate_bullet_direction(bullet.position - (line_length * 0.5 * local_dir))
+							var local_pos: Vector2 = bullet.global_position - next_bullet.global_position
+							var local_dir: Vector2 = local_pos.normalized()
+							var point_pos: = to_local(bullet.position) - line_length * 0.5 * local_dir
+							line_dir = calculate_bullet_direction(point_pos)
 					dir = line_dir
 					n += 1
 					if n == line_point_count:
@@ -197,7 +202,7 @@ func calculate_bullet_spawn_points():
 				randomize_arc_points()
 			else:
 				calculate_points_on_arc()
-#
+	
 		SpawnMode.LINE:
 			var midpoint: = calculate_point_on_circle(0)
 			calculate_points_on_line(0)
