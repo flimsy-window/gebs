@@ -72,10 +72,7 @@ func handle_local_bullets():
 		calculate_bullet_spawn_points()
 		var idx: = 0
 		for bullet in local_pool:
-			if idx > spawn_points.size() - 1:
-				bullet.is_local = false
-				bullet.reallocate()
-			else:
+			if idx <= spawn_points.size() - 1:
 				var pos: Vector2 = spawn_points[idx]
 				bullet.position = pos + global_position
 			idx += 1
