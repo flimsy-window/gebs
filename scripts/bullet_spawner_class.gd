@@ -4,6 +4,8 @@ class_name BulletSpawner
 Base class for BulletSpawners; bullet pooling and helper functions
 """
 
+signal pool_initialized
+
 # ---------------------------------------------------------------------------- #
 export var VISUAL: bool = true
 
@@ -51,7 +53,10 @@ func _input(event):
 # ---------------------------------------------------------------------------- #
 func _ready():
 	_setup()
-	pool = get_node(bullet_container).initialize_pool(bullet_res, pool_size)
+	if bullet_container:
+		var bc: BulletContainer= get_node(bullet_container)
+		pool = yield(bc.initialize_pool(bullet_res, pool_size), "completed")
+		emit_signal("pool_initialized")
 	update()
 
 func _setup():
@@ -129,6 +134,8 @@ func set_rotation_speed(value: float):
 func set_bullet_scale_modifier(value: float):
 	if bullet_scale_modifier != value:
 		bullet_scale_modifier = value
+		if !pool:
+			yield(self, "pool_initialized")
 		for bullet in pool.all_bullets:
 			var scale_mod: = rand_modifier(bullet_scale_modifier) if bullet_scale_modifier else 0.0
 			bullet.apply_scale_modifier(scale_mod)
@@ -136,6 +143,8 @@ func set_bullet_scale_modifier(value: float):
 func set_bullet_speed_modifier(value: float):
 	if bullet_speed_modifier != value:
 		bullet_speed_modifier = value
+		if !pool:
+			yield(self, "pool_initialized")
 		for bullet in pool.all_bullets:
 			var speed_mod: = rand_modifier(bullet_speed_modifier) if bullet_speed_modifier else 0.0
 			bullet.apply_speed_modifier(speed_mod)
