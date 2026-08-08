@@ -1,4 +1,7 @@
 # gebs: GoodEnoughBulletSpawner
+<ins>**This repo is no longer actively maintained.**</ins>\
+See [fork](https://github.com/ViniciusPeixotoDanelluci/gebs) for up-to-date repo.\
+\
 A bullet spawner/pool and visual helper made in GDscript.\
 Compatible with Godot 4.X (credit to [ViniciusPeixotoDanelluci](https://github.com/ViniciusPeixotoDanelluci))\
 \
